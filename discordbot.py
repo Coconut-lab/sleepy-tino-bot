@@ -1,32 +1,61 @@
 from cmath import log
 from distutils.sysconfig import PREFIX
-import discord
+import bs4_meal
+import station
+import disnake
+from disnake.ext import commands
 from dotenv import load_dotenv
 import os
 load_dotenv()
 
-PREFIX = os.environ['PREFIX']
-TOKEN = os.environ['TOKEN']
+BOT_TOKEN = os.environ["TOKEN"]
+bot = commands.Bot()
 
-client = discord.Client()
-
-@client.event
+@bot.event
 async def on_ready():
-    print(f'Logged in as {client.user}.')
+    print("The bot is ready!")
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
+@bot.slash_command()
+async def 막차시간(inter, * , line):
 
-    if message.content == f'{PREFIX}call':
-        await message.channel.send("callback!")
+    await inter.response.defer()
 
-    if message.content.startswith(f'{PREFIX}hello'):
-        await message.channel.send('Hello!')
+    try:
+        embed = disnake.Embed(title="정왕역 막차", color=0x00ff00)
+
+        real_last_canival = station.station(line)
+        for canival in real_last_canival:
+            embed.add_field(name="\u200b", value=str(canival), inline=False)
 
 
-try:
-    client.run(TOKEN)
-except discord.errors.LoginFailure as e:
-    print("Improper token has been passed.")
+        await inter.edit_original_response(embed=embed)
+
+
+    except Exception as e:
+        await inter.edit_original_response(content=f"오류가 발생했습니다...!: {e}")
+
+@bot.slash_command()
+async def tip학식(inter):
+    try:
+        bs4_meal.get_meal()
+        file_path_tip = './0.jpg'
+        img_file_tip = disnake.File(file_path_tip)
+
+        await inter.response.send_message("## 금주 TIP 지하 학식입니다!", file=img_file_tip)
+    except Exception as e:
+        await inter.response.send_message(f"오류가 발생했습니다...!: \n {e}")
+
+@bot.slash_command()
+async def e동학식(inter):
+    try:
+        bs4_meal.get_meal()
+        file_path_E = "./1.jpg"
+        img_file_E = disnake.File(file_path_E)
+
+        await inter.response.send_message("## 금주 E동 학식입니다!", file=img_file_E)
+    except Exception as e:
+        await inter.edit_original_response(f"오류가 발생했습니다...!: \n {e}")
+
+
+
+bot.run(BOT_TOKEN)
