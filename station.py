@@ -19,8 +19,7 @@ def station(num):
         elif num == "2" :
             station = "정왕역수인분당선막차"
             break
-        else :
-            print("잘못 입력했어요. 다시 입력하세요.")
+
     last_canival = []
     url += station
     now = datetime.now()
