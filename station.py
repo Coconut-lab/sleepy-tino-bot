@@ -54,10 +54,6 @@ def station(num):
                 cout_cnt += 1
                 cnt += 1
 
-    if not cout_cnt:
-        print('열차 운영이 끝났습니다.')
-    else:
-        print("본 정보는 네이버 검색 결과를 바탕으로 제공됩니다.")
 
     dr.quit()
 
